@@ -27,6 +27,7 @@ class MiLightHubPlatform {
     this.httpPassword = config.httpPassword || null;
     this.backchannel = config.backchannel || false;
     this.forceHTTP = config.forceHTTP || false;
+    this.adaptiveLighting = config.adaptiveLighting || false;
     this.debug = config.debug || false;
     this.darkMode = config.darkMode || false;
     this.host = config.host || 'milight-hub.local';
@@ -38,7 +39,13 @@ class MiLightHubPlatform {
     // controlling them in RGB mode lets seem the RGB screen to be buggy (orange colors will sometimes change to white_mode)
     // controlling them in RGB+CCT mode lets the color saving / favorite function to malfunction
     this.rgbcctMode = config.rgbcctMode === undefined ? false : this.rgbcctMode = config.rgbcctMode !== false;
-    this.characteristicDetails = '0x' + (this.backchannel ? 1 : 0).toString() + ',0x' + (this.rgbcctMode ? 1 : 0).toString();
+
+    // this is needed, so existing automations don't break by creating new accessories with adaptiveLighting functionality
+    if(this.adaptiveLighting){
+      this.characteristicDetails = '0x' + (this.backchannel ? 1 : 0).toString() + ',0x' + (this.rgbcctMode ? 1 : 0).toString() + ',0x' + (this.adaptiveLighting ? 1 : 0).toString();
+    } else {
+      this.characteristicDetails = '0x' + (this.backchannel ? 1 : 0).toString() + ',0x' + (this.rgbcctMode ? 1 : 0).toString();
+    }
     this.whiteRemotes = ['cct', 'fut091']; // only Cold white + Warm white remotes
     this.rgbRemotes = ['rgbw', 'rgb', 'fut020']; // only RGB remotes
     this.rgbcctRemotes = ['fut089', 'rgb_cct']; // RGB + Cold white + Warm white remotes
@@ -503,7 +510,8 @@ class MiLight {
       lightbulbService.getCharacteristic(Characteristic.ColorTemperature)
         .on('set', this.setColorTemperature.bind(this));
 
-        if(api.version >= 2.7 && api.versionGreaterOrEqual("1.3.0-beta.19")){
+        if(this.platform.adaptiveLighting && api.version >= 2.7 && api.versionGreaterOrEqual("1.3.0-beta.19")){
+          this.platform.debugLog('AdaptiveLightingController is enabled');
           var adaptiveLightingController = new api.hap.AdaptiveLightingController(lightbulbService);
           accessory.configureController(adaptiveLightingController);
         }

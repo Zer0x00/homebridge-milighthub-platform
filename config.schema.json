@@ -60,6 +60,13 @@
       "description": "Force use of HTTP regardless of MQTT settings in your MiLight hub",
       "required": false
     },
+    "adaptiveLighting": {
+      "title": "Enable adaptive lighting",
+      "type": "boolean",
+      "default": false,
+      "description": "Enable use of adaptive lighting. RGB+CCT mode must be enabled for this to work!",
+      "required": false
+    },
     "syncHubInterval": {
       "title": "Hub synchronization interval",
       "type": "integer",
@@ -96,6 +103,7 @@
         "backchannel",
         "darkMode",
         "rgbcctMode",
+        "adaptiveLighting",
         "forceHTTP",
         "syncHubInterval",
         "commandDelay",
