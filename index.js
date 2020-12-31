@@ -3,10 +3,11 @@ const packageJSON = require('./package.json');
 var http = require('http');
 var mqtt = require('mqtt');
 
-var Accessory, Service, Characteristic, UUIDGen;
+var Accessory, api, Service, Characteristic, UUIDGen;
 
 module.exports = function (homebridge) {
   Accessory = homebridge.platformAccessory;
+  api = homebridge;
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
@@ -501,6 +502,11 @@ class MiLight {
       }
       lightbulbService.getCharacteristic(Characteristic.ColorTemperature)
         .on('set', this.setColorTemperature.bind(this));
+
+        if(api.version >= 2.7 && api.versionGreaterOrEqual("1.3.0-beta.19")){
+          var adaptiveLightingController = new api.hap.AdaptiveLightingController(lightbulbService);
+          accessory.configureController(adaptiveLightingController);
+        }
     }
   }
 
