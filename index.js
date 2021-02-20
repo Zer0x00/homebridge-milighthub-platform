@@ -667,8 +667,8 @@ class MiLight {
         var hue = color.hue;
         var saturation = color.saturation;
 
-        console.log(hue);
-        console.log(saturation);
+        this.accessory.getService(Service.Lightbulb).getCharacteristic(Characteristic.Hue).updateValue(color.hue);
+        this.accessory.getService(Service.Lightbulb).getCharacteristic(Characteristic.Saturation).updateValue(color.saturation);
       }
     }
 
